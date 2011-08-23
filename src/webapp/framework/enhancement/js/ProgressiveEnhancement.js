@@ -63,6 +63,32 @@ var fluid_1_4 = fluid_1_4 || {};
         gradeNames: "fluid.typeFount"
     });
     
+    /*
+    fluid.demands("fluid.progressiveCheckerForComponent", [], {
+        funcName: "fluid.progressiveChecker",
+        type: "replace",
+        options: {
+            expander: {
+                type: "fluid.deferredCall",
+                func: "fluid.progressiveCheckerForComponent.options",
+                args: "accessor{options}"
+                }
+            }
+        }
+    );*/
+    // alias for the above?
+    fluid.wrapper("fluid.progressiveCheckerForComponent", {
+        forwardTo: "fluid.progressiveChecker",
+    });
+
+    fluid.progressiveCheckerForComponent.options = function(optionsAccessor) {
+        var name = optionsAccessor.get("componentName");
+        var defaults = fluid.defaults(name);
+        var shortName = name.indexOf("fluid.") === 0? name.substring(6) : name;
+        return [defaults.progressiveCheckerOptions, {aliasTypeNames: "fluid.progressiveCheckerForComponent." + shortName}];
+    };
+
+    
     /**********************************************************
      * This code runs immediately upon inclusion of this file *
      **********************************************************/

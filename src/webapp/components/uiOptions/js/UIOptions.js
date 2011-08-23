@@ -757,7 +757,7 @@ var fluid_1_4 = fluid_1_4 || {};
         produceTree: "fluid.uiOptions.layoutControls.produceTree",
         resources: {                    
             template: "{templateLoader}.resources.layoutControls"
-        }
+        } 
     });
 
     fluid.uiOptions.layoutControls.produceTree = function (that) {

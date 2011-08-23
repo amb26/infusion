@@ -274,7 +274,7 @@ var fluid_1_4 = fluid_1_4 || {};
         
       
     fluid.model.isNullChange = function (model, request, resolverGetConfig) {
-        if (request.type === "ADD") {
+        if (request.type.toLowerCase() === "add") {
             var existing = fluid.get(model, request.path, resolverGetConfig);
             if (existing === request.value) {
                 return true;
@@ -285,10 +285,11 @@ var fluid_1_4 = fluid_1_4 || {};
      */
     fluid.model.applyChangeRequest = function (model, request, resolverSetConfig) {
         var pen = fluid.model.getPenultimate(model, request.path, resolverSetConfig || fluid.model.defaultSetConfig);
+        var type = request.type.toLowerCase();
         
-        if (request.type === "ADD" || request.type === "MERGE") {
-            if (request.path === "" || request.type === "MERGE") {
-                if (request.type === "ADD") {
+        if (type === "ADD" || type === "MERGE") {
+            if (request.path === "" || type === "MERGE") {
+                if (type === "ADD") {
                     fluid.clear(pen.root);
                 }
                 $.extend(true, request.path === "" ? pen.root: pen.root[pen.last], request.value);
@@ -297,7 +298,7 @@ var fluid_1_4 = fluid_1_4 || {};
                 pen.root[pen.last] = request.value;
             }
         }
-        else if (request.type === "DELETE") {
+        else if (type === "DELETE") {
             if (request.path === "") {
                 fluid.clear(pen.root);
             }
@@ -320,6 +321,21 @@ var fluid_1_4 = fluid_1_4 || {};
         };
     }
     
+    // A simple Accessor that operates no events
+    fluid.makeSimpleAccessor = function (model, options) {
+        options = options || {};
+        return {
+            get: function (path) {
+                return fluid.get(model, path, options.resolverGetConfig);
+            },
+            set: function (path, value) {
+                fluid.set(model, path, value, options.resolverSetConfig);
+            },
+            "delete": function (path) {
+                fluid.model.applyChangeRequest(model, "delete", options.resolverSetConfig);  
+            }
+        };
+    };
   
     fluid.makeChangeApplier = function (model, options) {
         options = options || {};

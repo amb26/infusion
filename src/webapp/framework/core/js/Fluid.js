@@ -1434,7 +1434,8 @@ var fluid = fluid || fluid_1_4;
      * @return {Array of Object} The instantiated subcomponents, one for each member
      * of <code>that.options[className]</code>.
      */
-    
+    // Note: This must be deprecated as of Fluid 2.0 to ensure that instantiator contents can 
+    // be efficiently kept up to date
     fluid.initSubcomponents = function (that, className, args) {
         var entry = that.options[className];
         if (!entry) {
@@ -1454,6 +1455,7 @@ var fluid = fluid || fluid_1_4;
             if (optindex !== -1) {
                 args[optindex] = entry.options;
             }
+            var child = 
             togo[i] = fluid.initSubcomponentImpl(that, entry, args);
         }
         return togo;
