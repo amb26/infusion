@@ -1214,6 +1214,18 @@ var fluid = fluid || fluid_1_5;
         fluid.fail("fluid.expandOptions could not be loaded - please include FluidIoC.js in order to operate IoC-driven event with descriptor " + material);      
     };
     
+        
+    fluid.resolveRecord = function (options, that, name) {
+        var records = options[name];
+        if (typeof(records) === "string" && records.charAt(0) === "{") {
+            options[name] = records = fluid.expandOptions(records, that);
+        }
+        if (records && fluid.isPrimitive(records)) {
+            fluid.fail("Error in configuration structure - primitive " + records + " found where records expected for entry " + name);
+        }
+        return records;
+    };
+    
     // unsupported, NON-API function
     fluid.mergeListeners = function (that, events, listeners) {
         fluid.each(listeners, function (value, key) {
@@ -1274,6 +1286,9 @@ var fluid = fluid || fluid_1_5;
     // unsupported, NON-API function    
     fluid.makeMergeListenersPolicy = function (merger) {
         return function (target, source) {
+            if (typeof(source) === "string") { // support for FLUID-5208
+                return source;
+            }
             target = target || {};
             fluid.each(source, function (listeners, key) {
                 target[key] = merger(target[key], listeners, key);
@@ -1442,7 +1457,7 @@ var fluid = fluid || fluid_1_5;
     // Modify supplied options record to include "componentSource" annotation required by FLUID-5082
     // TODO: This function really needs to act recursively in order to catch listeners registered for subcomponents    
     fluid.annotateListeners = function (componentName, options) {
-        if (options.listeners) {
+        if (fluid.isPlainObject(options.listeners)) {
             options.listeners = fluid.transform(options.listeners, function (record) {
                 var togo = fluid.makeArray(record);
                 return fluid.transform(togo, function (onerec) {
@@ -2093,6 +2108,33 @@ var fluid = fluid || fluid_1_5;
         return fluid.typeTag(that.options.targetTypeName);
     };
     
+    // unsupported, NON-API function
+    fluid.operateInitComponent = function (that, options, mergeOptions, evented) {
+        var i = 0; // for loop to while loop to avoid Firebug bug #6755
+        while (i < mergeOptions.mergeBlocks.length) {
+            mergeOptions.mergeBlocks[i].initter();
+            ++i;
+        }
+        mergeOptions.initter();
+        delete options.mergePolicy;
+        
+        fluid.initLifecycleFunctions(that);
+        fluid.fireEvent(options, "preInitFunction", that);
+
+        if (evented) {
+            fluid.instantiateFirers(that, options);
+            var listeners = fluid.resolveRecord(options, that, "listeners");
+            fluid.mergeListeners(that, that.events, listeners);
+            if (fluid.mergeModelListeners) {
+                var modelListeners = fluid.resolveRecord(options, that, "modelListeners");
+                fluid.mergeModelListeners(that, modelListeners);
+            }
+        }
+        if (!fluid.hasGrade(options, "autoInit")) {
+            fluid.clearLifecycleFunctions(options);
+        }
+    }
+    
     /**
      * Creates a new "little component": a that-ist object with options merged into it by the framework.
      * This method is a convenience for creating small objects that have options but don't require full
@@ -2120,25 +2162,8 @@ var fluid = fluid || fluid_1_5;
         
         // TODO: ****THIS**** is the point we must deliver and suspend!! Construct the "component skeleton" first, and then continue
         // for as long as we can continue to find components.
-        for (var i = 0; i < mergeOptions.mergeBlocks.length; ++ i) {
-            mergeOptions.mergeBlocks[i].initter();
-        }
-        mergeOptions.initter();
-        delete options.mergePolicy;
+        fluid.operateInitComponent(that, options, mergeOptions, evented);
         
-        fluid.initLifecycleFunctions(that);
-        fluid.fireEvent(options, "preInitFunction", that);
-
-        if (evented) {
-            fluid.instantiateFirers(that, options);
-            fluid.mergeListeners(that, that.events, options.listeners);
-            if (fluid.mergeModelListeners) {
-                fluid.mergeModelListeners(that, options.modelListeners);
-            }
-        }
-        if (!fluid.hasGrade(options, "autoInit")) {
-            fluid.clearLifecycleFunctions(options);
-        }
         return that;
     };
 

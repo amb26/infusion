@@ -3654,5 +3654,34 @@ fluid.registerNamespace("fluid.tests");
         jqUnit.assertValue("Invoker is resolved correctly", component.method);
         component.method();
     });
+    
+    fluid.fluid5208record = function (that, name) {
+        that.fireRecord.push(name);
+    };
+    
+    fluid.defaults("fluid.fluid5208head", {
+        gradeNames: ["fluid.eventedComponent", "autoInit"],
+        pseudoMembers: {
+            fireRecord: []
+        },
+        pseudoEvents: {
+            event1: null,
+            event2: null,  
+        },
+        pseudoListeners: {
+            event1: "fluid.fluid5208record({that}, event1)",
+            event2: "fluid.fluid5208record({that}, event2)"  
+        },
+        events: "{that}.options.pseudoEvents",
+        listeners: "{that}.options.pseudoListeners",
+        members: "{that}.options.pseudoMembers"
+    });
+    
+    jqUnit.test("Test root record references", function () {
+        var that = fluid.fluid5208head();
+        that.events.event1.fire();
+        that.events.event2.fire();
+        jqUnit.assertDeepEq("Root records resolved to events", that.fireRecord, ["event1", "event2"]);
+    });
 
 })(jQuery);

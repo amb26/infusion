@@ -129,6 +129,7 @@ var fluid_1_5 = fluid_1_5 || {};
             },
             initter: function () {
                 var records = fluid.driveStrategy(options, recordPath, optionsStrategy) || {};
+                records = fluid.resolveRecord(options, that, recordPath);
                 for (var name in records) {
                     fluid.getForComponent(that, prefix.concat([name]));
                 }
