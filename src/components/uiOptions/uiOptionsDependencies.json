@@ -1,42 +1,10 @@
 {
     "uiOptions": {
         "name": "User Interface Options",
-        "description": "Users customize their preferences and needs for viewing content.",
-        "cssFiles": [
-            "UIOptions.css",
-            "FatPanelUIOptions.css",
-            "FullNoPreviewUIOptions.css",
-            "FullPreviewUIOptions.css",
-            "FullUIOptions.css"
-        ],
+        "description": "An instance of a preference editor created by the Infusion Preferences Framework. Users customize their preferences and needs for viewing content.",
         "files": [
-            "URLUtilities.js",
-            "i18n.js",
-            "Store.js",
-            "TextfieldSlider.js",
-            "UIOptions.js",
-            "Panels.js",
-            "ModelRelay.js",
-            "Enactors.js",
-            "UIEnhancer.js",
-            "FatPanelUIOptions.js",
-            "FullNoPreviewUIOptions.js",
-            "FullPreviewUIOptions.js",
-            "SlidingPanel.js"
+            "UIOptions.js"
         ],
-        "dependencies": [
-            "fss",
-            "fonts",
-            "jQuery",
-            "jQueryUICore",
-            "framework",
-            "renderer",
-            "jQueryUIWidgets",
-            "tabs",
-            "tableOfContents",
-            "json",
-            "jQueryAriaTabsPlugin",
-            "jQueryTouchPunchPlugin"
-        ]
+        "dependencies": ["jQuery", "framework", "preferences"]
     }
 }

@@ -1,3 +1,5 @@
+/* the grades and schemas Preferences Editor demos use the same css */
+
 /* Define font families */
 @font-face {
   font-family: Lato;
@@ -121,38 +123,38 @@ img {
     Font color: #3E606F
     Button blue: #0071BC
  */
-.uio-demo-theme {
+.prefsEditor-demo-theme {
     color: #3E606F;
     background-image: url("../images/background_texture.png");
     background-position: left top;
     background-repeat: repeat;
 }
-.uio-demo-theme a {
+.prefsEditor-demo-theme a {
     color: #3E606F;
 }
-.uio-demo-theme .disp-opts-button-container {
+.prefsEditor-demo-theme .disp-opts-button-container {
     background-color: #0071BC;
     background-image: url("../images/arrow_right.png");
     background-repeat: no-repeat;
-    background-position: right; 
+    background-position: right;
 }
-.uio-demo-theme .disp-opts-button {
+.prefsEditor-demo-theme .disp-opts-button {
     color: white;
     background-color: #0071BC;
 }
-.uio-demo-theme .disp-opts-button a {
+.prefsEditor-demo-theme .disp-opts-button a {
     color: white;
 }
-.uio-demo-theme .feedback-form input,
-.uio-demo-theme .feedback-form textarea {
+.prefsEditor-demo-theme .feedback-form input,
+.prefsEditor-demo-theme .feedback-form textarea {
     color: grey;
 }
 
-/* Overriding some of the default Fat Panel UI Options colours */
-.uio-demo-theme .fl-uiOptions-fatPanel .fl-panelBar .fl-uio-tabs {
+/* Overriding some of the default colours of Preference Editor - separated panel */
+.prefsEditor-demo-theme .fl-prefsEditor-separatedPanel .fl-panelBar .fl-prefsEditor-buttons {
     background-color: #0071BC;
 }
-.fl-uiOptions-fatPanel .fl-panelBar button {
+.fl-prefsEditor-separatedPanel .fl-panelBar button {
     font-family: "Myriad Pro", Helvetica, Tahoma, Verdana, sans-serif;
     border: 0;
     border-radius: 0;
@@ -160,16 +162,16 @@ img {
     font-weight: bold;
 }
 
-.uio-demo-theme .fl-uiOptions-fatPanel .fl-uiOptions-showHide,
-.uio-demo-theme .fl-uiOptions-fatPanel .fl-uiOptions-reset  {
+.prefsEditor-demo-theme .fl-prefsEditor-separatedPanel .fl-prefsEditor-showHide,
+.prefsEditor-demo-theme .fl-prefsEditor-separatedPanel .fl-prefsEditor-reset  {
     background-color: #0071BC;
     color: white;
 }
 
-.uio-demo-theme .fl-uiOptions-fatPanel .fl-uiOptions-reset  {
+.prefsEditor-demo-theme .fl-prefsEditor-separatedPanel .fl-prefsEditor-reset  {
     border-right: 1px solid #fff;
 }
 
-.fl-uiOptions-fatPanel .fl-panelBar .fl-uiOptions-reset  {
+.fl-prefsEditor-separatedPanel .fl-panelBar .fl-prefsEditor-reset  {
     border-right: 1px solid #fff;
 }
