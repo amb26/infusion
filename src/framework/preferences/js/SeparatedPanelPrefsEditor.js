@@ -85,6 +85,34 @@ var fluid_1_5 = fluid_1_5 || {};
                         showText: "{that}.stringBundle.slidingPanelShowText",
                         hideText: "{that}.stringBundle.slidingPanelHideText"
                     },
+                    listeners: {
+                        "onPanelShow.showIframe": {
+                            "this": "{iframeRenderer}.iframe",
+                            "method": "show"
+                        },
+                        "onPanelShow.showReset": {
+                            "this": "{separatedPanel}.dom.reset",
+                            "method": "show"
+                        },
+                        "afterPanelShow.updateView": {
+                            listener: "fluid.prefs.separatedPanel.updateView",
+                            args: ["{prefsEditor}"]
+                        },
+                        "onPanelHide.hideReset": {
+                            "this": "{separatedPanel}.dom.reset",
+                            "method": "hide"
+                        },
+                        "afterPanelHide.iframeHeight": {
+                            "this": "{iframeRenderer}.iframe",
+                            "method": "height",
+                            "args": [0]
+                        },
+                        "afterPanelHide.iframeHide": {
+                            "this": "{iframeRenderer}.iframe",
+                            "method": "hide"
+                        }
+
+                    },
                     invokers: {
                         operateShow: {
                             funcName: "fluid.prefs.separatedPanel.showPanel",
@@ -233,9 +261,9 @@ var fluid_1_5 = fluid_1_5 || {};
     fluid.prefs.separatedPanel.bindEvents = function (prefsEditor, iframeEnhancer, separatedPanel) {
         // TODO: This binding should be done declaratively - needs ginger world in order to bind onto slidingPanel
         // which is a child of this component
-        separatedPanel.slidingPanel.events.afterPanelShow.addListener(function () {
-            fluid.prefs.separatedPanel.updateView(prefsEditor);
-        });
+        // separatedPanel.slidingPanel.events.afterPanelShow.addListener(function () {
+        //     fluid.prefs.separatedPanel.updateView(prefsEditor);
+        // });
 
         prefsEditor.events.onPrefsEditorRefresh.addListener(function () {
             iframeEnhancer.updateModel(prefsEditor.model);
@@ -253,19 +281,19 @@ var fluid_1_5 = fluid_1_5 || {};
             iframe.animate(attrs, 400);
         });
 
-        separatedPanel.slidingPanel.events.afterPanelHide.addListener(function () {
-            separatedPanel.iframeRenderer.iframe.height(0);
+        // separatedPanel.slidingPanel.events.afterPanelHide.addListener(function () {
+        //     separatedPanel.iframeRenderer.iframe.height(0);
 
-            // Prevent the hidden Preferences Editorpanel from being keyboard and screen reader accessible
-            separatedPanel.iframeRenderer.iframe.hide();
-        });
-        separatedPanel.slidingPanel.events.onPanelShow.addListener(function () {
-            separatedPanel.iframeRenderer.iframe.show();
-            separatedPanel.locate("reset").show();
-        });
-        separatedPanel.slidingPanel.events.onPanelHide.addListener(function () {
-            separatedPanel.locate("reset").hide();
-        });
+        //     // Prevent the hidden Preferences Editorpanel from being keyboard and screen reader accessible
+        //     separatedPanel.iframeRenderer.iframe.hide();
+        // });
+        // separatedPanel.slidingPanel.events.onPanelShow.addListener(function () {
+        //     separatedPanel.iframeRenderer.iframe.show();
+        //     separatedPanel.locate("reset").show();
+        // });
+        // separatedPanel.slidingPanel.events.onPanelHide.addListener(function () {
+        //     separatedPanel.locate("reset").hide();
+        // });
     };
 
     // Replace the standard animator since we don't want the panel to become hidden
