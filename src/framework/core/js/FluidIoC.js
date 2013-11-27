@@ -620,6 +620,9 @@ var fluid_1_5 = fluid_1_5 || {};
     // unsupported, NON-API function
     fluid.makeStackFetcher = function (parentThat, localRecord) {
         var fetcher = function (parsed) {
+            if (parentThat && parentThat.destroy === fluid.destroyedMarker) {
+                fluid.fail("Cannot resolve reference " + parsed + " from component " + fluid.dumpThat(parentThat) + " which has been destroyed");
+            }
             var context = parsed.context;
             if (localRecord && localRecordExpected.test(context)) {
                 var fetched = fluid.get(localRecord[context], parsed.path);
@@ -712,6 +715,7 @@ var fluid_1_5 = fluid_1_5 || {};
         };
         function recordComponent(component, path, created) {
             if (created) {
+                console.log("Constructed component " + fluid.dumpThat(component) + " at path " + path + " for instantiator " + that.id);
                 idToInstantiator[component.id] = that;
                 var shadow = that.idToShadow[component.id] = {};
                 shadow.path = path;
@@ -751,6 +755,8 @@ var fluid_1_5 = fluid_1_5 || {};
             // only recurse on components which were created in place - if the id record disagrees with the
             // recurse path, it must have been injected
             if (childRecord && childRecord.path === childPath) {
+                console.log("Clearing component " + fluid.dumpThat(child) + " from path " + childPath);
+                child.destroy = fluid.destroyedMarker;
                 fluid.fireEvent(child, "events.onDestroy", [child, name, component]);
                 fluid.clearListeners(childRecord);
                 fluid.visitComponentChildren(child, function(gchild, gchildname, newPath, parentPath) {
