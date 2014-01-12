@@ -542,16 +542,26 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             method: "assertEquals",
             expected: "it was false"
         }, {
-            message: "condition setting an object- true",
+            message: "condition setting an object - true",
             expandWrap: true,
             transform: {
                 type: "fluid.transforms.condition",
                 conditionPath: "catsAreDecent",
                 "true": {
-                    "result": "it was true"
+                     transform: {
+                         type: "fluid.transforms.literalValue",
+                         value: {
+                            "result": "it was true"
+                         }
+                     }
                 },
                 "false": {
-                    "result": "it was false"
+                     transform: {
+                         type: "fluid.transforms.literalValue",
+                         value: {
+                            "result": "it was false"
+                         }
+                     }
                 }
             },
             method: "assertDeepEq",
@@ -565,10 +575,20 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
                 type: "fluid.transforms.condition",
                 conditionPath: "catsAreEvil",
                 "true": {
-                    "result": "it was true"
+                     transform: {
+                         type: "fluid.transforms.literalValue",
+                         value: {
+                            "result": "it was true"
+                         }
+                     }
                 },
                 "false": {
-                    "result": "it was false"
+                     transform: {
+                         type: "fluid.transforms.literalValue",
+                         value: {
+                            "result": "it was false"
+                         }
+                     }
                 }
             },
             method: "assertDeepEq",
