@@ -1293,4 +1293,59 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         jqUnit.assertDeepEq("The target model is transformed properly - modelRelay on the target component", expectedValue, thatOnTarget.sub.model.fahrenheit);
     });
 
+    // FLUID-5285
+    var fluid5285Counts = 0;
+    var fluid5285InitialModel = {sub1Key: true, sub2Key: true};
+    var fluid5285ChangedModel = {sub1Key: false, sub2Key: true};
+
+    fluid.defaults("fluid.tests.fluid5285", {
+        gradeNames: ["fluid.standardRelayComponent", "autoInit"],
+        components: {
+            sub1: {
+                type: "fluid.standardRelayComponent",
+                options: {
+                    model: {
+                        sub1Key: "{fluid5285}.model.sub1Key"
+                    }
+                }
+            },
+            sub2: {
+                type: "fluid.standardRelayComponent",
+                options: {
+                    model: {
+                        sub2Key: "{fluid5285}.model.sub2Key"
+                    }
+                }
+            }
+        },
+        listeners: {
+            "onCreate.setInitialModel": {
+                func: "{that}.applier.requestChange",
+                args: ["", fluid5285InitialModel]
+            }
+        },
+        modelListeners: {
+            "*": {
+                func: "fluid.tests.fluid5285.countModelChanges",
+                args: "{that}.model"
+            }
+        }
+    });
+
+    fluid.tests.fluid5285.countModelChanges = function (newModel) {
+        if (fluid5285Counts === 0) {
+            jqUnit.assertDeepEq("The initial top model is expected", fluid5285InitialModel, newModel);
+        } else if (fluid5285Counts === 1) {
+            jqUnit.assertDeepEq("The changed top model is expected", fluid5285ChangedModel, newModel);
+        }
+        fluid5285Counts++;
+    }
+
+    jqUnit.test("FLUID-5285", function () {
+        var that = fluid.tests.fluid5285();
+        jqUnit.assertEquals("Only the self model change is triggered for the top component at the instantiation", 1, fluid5285Counts);
+
+        that.sub1.applier.requestChange("sub1Key", false);
+        jqUnit.assertEquals("Only one model change is relayed from one sub-component to the top", 2, fluid5285Counts);
+    });
 })(jQuery);
