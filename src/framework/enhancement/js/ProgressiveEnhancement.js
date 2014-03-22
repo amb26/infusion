@@ -127,8 +127,7 @@ var fluid_1_5 = fluid_1_5 || {};
     };
     
     fluid.progressiveChecker.forComponent = function (that, componentName) {
-        var defaults = fluid.defaults(componentName);
-        var expanded = fluid.expandOptions(fluid.copy(defaults.progressiveCheckerOptions), that);
+        var expanded = fluid.getForComponent(that, ["options", "progressiveCheckerOptions"]);
         var checkTag = fluid.progressiveChecker.check(expanded.checks, expanded.defaultContextName);
         var horizon = componentName + ".progressiveCheck";
         return [horizon, checkTag];      
@@ -139,7 +138,7 @@ var fluid_1_5 = fluid_1_5 || {};
         invokers: {
             check: {
                 funcName: "fluid.progressiveChecker.forComponent",
-                args: ["{that}", "{that}.options.componentName"]
+                args: ["{that}", "{that}.typeName"]
             }
         }
         // componentName

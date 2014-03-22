@@ -347,12 +347,8 @@ var fluid_1_5 = fluid_1_5 || {};
      */
     
     fluid.defaults("fluid.uploader", {
-        gradeNames: ["fluid.viewComponent", "autoInit"],
+        gradeNames: ["fluid.viewComponent", "fluid.progressiveCheckerForComponent", "autoInit"],
         components: {
-            uploaderContext: {
-                type: "fluid.progressiveCheckerForComponent",
-                options: {componentName: "fluid.uploader"}
-            },
             uploaderImpl: {
                 type: "fluid.uploaderImpl",
                 container: "{uploader}.container",
@@ -363,7 +359,7 @@ var fluid_1_5 = fluid_1_5 || {};
             // Allow the uploader implementation component to impersonate the exterior exposed "fluid.uploader" by broadcasting all options to it
             source: "{that}.options",
             removeSource: true,
-            exclusions: ["components.uploaderContext", "components.uploaderImpl"],
+            exclusions: ["components.uploaderImpl"],
             target: "{that > uploaderImpl}.options"
         },
         progressiveCheckerOptions: {
