@@ -1040,20 +1040,20 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
         fluid.tests.assertTransactionsConcluded(that);
     });
-    
+
     /** FLUID-5361 listener order notification test **/
-    
+
     fluid.tests.priorityRecorder = function (that, priority) {
         that.priorityLog.push(priority);
     };
-    
+
     fluid.tests.recordAndDestroy = function (head, priority, that) {
         head.priorityLog.push(priority);
         if (head.destroyNow) {
             that.applier.modelChanged.removeListener("priority2");
         }
     };
-    
+
     fluid.defaults("fluid.tests.fluid5361head", {
         gradeNames: ["fluid.tests.fluid5024head", "autoInit"],
         members: {
@@ -1111,7 +1111,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             }
         }
     });
-    
+
     fluid.defaults("fluid.tests.fluid5361destroyingHead", {
         gradeNames: ["fluid.tests.fluid5361head", "autoInit"],
         invokers: {
@@ -1125,7 +1125,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         that.child1.applier.change("celsius", 25);
         var expected = [2, 2, 1, 1, "last", "last"];
         jqUnit.assertDeepEq("Model notifications globally sorted by priority", expected, that.priorityLog);
-        
+
         var that2 = fluid.tests.fluid5361destroyingHead();
         that2.priorityLog = [];
         that2.destroyNow = true;
@@ -1312,15 +1312,15 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         var expected = {pageIndex: 0, pageSize: 10, totalRange: 75, pageCount: 8};
         jqUnit.assertDeepEq("pageCount computed correctly on init", expected, that.model);
         fluid.tests.assertTransactionsConcluded(that);
-        
+
         that.applier.change("pageIndex", -1);
         jqUnit.assertDeepEq("pageIndex clamped to 0", expected, that.model);
         fluid.tests.assertTransactionsConcluded(that);
-        
+
         that.applier.change("pageIndex", -1);
         jqUnit.assertDeepEq("pageIndex clamped to 0 second time", expected, that.model);
         fluid.tests.assertTransactionsConcluded(that);
-        
+
         that.applier.change("pageIndex", 8);
         var expected2 = {pageIndex: 7, pageSize: 10, totalRange: 75, pageCount: 8};
         jqUnit.assertDeepEq("pageIndex clamped to pageCount - 1", expected2, that.model);
@@ -1516,11 +1516,11 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
     });
 
     /** FLUID-5358 - Use of arbitrary functions and fluid.transforms.identity **/
-    
+
     fluid.tests.fluid5358Multiply = function (a) {
         return a * 2;
     };
-    
+
     fluid.defaults("fluid.tests.fluid5358root", {
         gradeNames: ["fluid.standardRelayComponent", "autoInit"],
         model: {
@@ -1547,7 +1547,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             }
         }
     });
-    
+
     jqUnit.test("FLUID-5358: Use of arbitrary functions for relay and fluid.transforms.identity", function () {
         var that = fluid.tests.fluid5358root();
         jqUnit.assertEquals("Transformed using free multiply", 2, that.sub.model.multipliedValue);
@@ -1599,9 +1599,9 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
 
         jqUnit.assertDeepEq("The input model is merged with the default model", expectedModel, that.model);
     });
-    
+
     // FLUID-5371: Model relay directive "forward" and "backward"
-    
+
     fluid.defaults("fluid.tests.fluid5371root", {
         gradeNames: ["fluid.standardRelayComponent", "autoInit"],
         model: {
@@ -1634,28 +1634,80 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             }
         }]
     });
-    
+
     jqUnit.test("FLUID-5371: Model relay directives 'forward' and 'backward'", function () {
         var that = fluid.tests.fluid5371root();
         jqUnit.assertEquals("Forward init relay with backward never", 3, that.model.forwardOnlyTarget);
         that.applier.change("forwardOnly", 4);
         jqUnit.assertEquals("Forward live relay with backward never", 4, that.model.forwardOnlyTarget);
-        
+
         that.applier.change("forwardOnlyTarget", 4.5);
         jqUnit.assert("No backward live relay with backward never", 4, that.model.forwardOnly);
 
         jqUnit.assertEquals("Backward init relay with forward never", 5, that.model.backwardOnlySource);
         that.applier.change("backwardOnly", 6);
         jqUnit.assert("Backward live relay with forward never", 6, that.model.backwardOnlySource);
-        
+
         that.applier.change("backwardOnlySource", 6.5);
         jqUnit.assert("No forward live relay with forward never", 6, that.model.backwardOnly);
-        
+
         jqUnit.assertEquals("No init relay with liveOnly forward", undefined, that.model.liveOnlyTarget);
         that.applier.change("liveOnly", 8);
         jqUnit.assertEquals("Forward relay with liveOnly forward", 8, that.model.liveOnlyTarget);
         that.applier.change("liveOnlyTarget", 9);
         jqUnit.assertEquals("Backward relay with liveOnly forwarD", 9, that.model.liveOnly);
     });
-    
+
+    // FLUID-5473: Use the valueMapper example described in FLUID-5473 in the model relay
+    fluid.defaults("fluid.tests.fluid5473", {
+        gradeNames: ["fluid.standardRelayComponent", "autoInit"],
+        model: {
+            flashing: true,
+            noflashing: false
+        },
+        components: {
+            sub: {
+                type: "fluid.standardRelayComponent",
+                options: {
+                    modelRelay: {
+                        source: "{fluid5473}.model",
+                        target: "{that}.model",
+                        backward: "liveOnly",
+                        singleTransform: {
+                            type: "fluid.transforms.valueMapper",
+                            defaultOutputPath: "flashing",
+                            defaultOutputValue: "unknown",
+                            options: [{
+                                inputPath: "flashing",
+                                inputValue: true,
+                                outputValue: "flashing"
+                            },{
+                                inputPath: "noflashing",
+                                inputValue: true,
+                                outputValue: "noflashing"
+                            }]
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    jqUnit.test("FLUID-5473: Use the valueMapper example described in FLUID-5473 in the model relay", function () {
+        var that = fluid.tests.fluid5473();
+
+
+        var expectedInitSubModel = {
+            flashing: "flashing"
+        };
+        jqUnit.assertDeepEq("forward init relay to the subcomponent is correct", expectedInitSubModel, that.sub.model);
+
+        that.sub.applier.change("flashing", "noflashing");
+        var expectedRootModel = {
+            flashing: false,
+            noflashing: true
+        };
+        jqUnit.assertDeepEq("backward relay to the root is correct", expectedRootModel, that.model);
+    });
+
 })(jQuery);
