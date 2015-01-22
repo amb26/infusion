@@ -1933,6 +1933,38 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         jqUnit.assertDeepEq("Propagated unknown to upstream model", [], that.model.accessibilityHazard);
     });
     
+    // FLUID-5517: Failure to batch compound updates properly - example from metadata feedback
+    
+    fluid.defaults("fluid.tests.fluid5517root", {
+        gradeNames: ["fluid.standardRelayComponent", "autoInit"],
+        model: {
+            userData: {
+                mismatch: true
+            },
+            inTransit: {
+                opinion: ["dislike"]   // Possible values: like, dislike
+            }
+        },
+        modelRelay: [{
+            source: "{that}.model.inTransit.opinion",
+            target: "{that}.model.userData.opinion",
+            forward: "liveOnly",
+            singleTransform: {
+                type: "fluid.transforms.arrayToSetMembership",
+                options: {
+                    "like": "match",
+                    "dislike": "mismatch"
+                }
+            }
+        }]
+    });
+
+    jqUnit.test("FLUID-5517: Batching failure in model relay", function () {
+        var that = fluid.tests.fluid5517root();
+        that.applier.change("userData.match", true);
+        jqUnit.assertDeepEq("Stabilised model synchronised", ["like"], that.model.inTransit.opinion);
+    });
+    
     fluid.defaults("fluid.tests.fluid5504root", {
         gradeNames: ["fluid.standardRelayComponent", "autoInit"],
         listeners: {
