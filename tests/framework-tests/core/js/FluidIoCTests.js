@@ -291,21 +291,28 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
             start: [100, 100],
             end: [100, 200]
         },
-        polar: "@expand:fluid.tests.vectorToPolar({that}.options.arrowGeometry.start, {that}.options.arrowGeometry.end)"
+        polar: "@expand:fluid.tests.vectorToPolar({that}.options.arrowGeometry.start, {that}.options.arrowGeometry.end)",
+        renderPoints: "@expand:fluid.tests.retrunking.verify({that}.options.arrowGeometry)"
     });
 
+    fluid.tests.retrunking.expected = {
+        length: 100,
+        width: 10,
+        headWidth: 20,
+        headHeight: 20,
+        angle: Math.PI / 2,
+        start: [100, 100],
+        end: [100, 200]
+    };
+    // This assertion checks FLUID-5981 (currently failure)
+    fluid.tests.retrunking.verify = function (arrowGeometry) {
+        jqUnit.assertDeepEq("Fully evaluated expander arguments", fluid.tests.retrunking.expected, arrowGeometry);
+    };
+
     jqUnit.test("FLUID-4930: Options retrunking test", function () {
+        jqUnit.expect(2);
         var that = fluid.tests.retrunking();
-        var expected = {
-            length: 100,
-            width: 10,
-            headWidth: 20,
-            headHeight: 20,
-            angle: Math.PI / 2,
-            start: [100, 100],
-            end: [100, 200]
-        };
-        jqUnit.assertDeepEq("Successfully evaluated all options", expected, that.options.arrowGeometry);
+        jqUnit.assertDeepEq("Successfully evaluated all options", fluid.tests.retrunking.expected, that.options.arrowGeometry);
     });
 
     /** FLUID-5755 - another "exotic types" test - this time a native array **/
