@@ -2327,7 +2327,7 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         model: "{root}.model.subModel"
     });
 
-    /* FLUID-5585: Removal from the model is not relayed in any case */
+    /** FLUID-5585: Removal from the model is not relayed in any case */
 
     fluid.defaults("fluid.tests.fluid5585.root", {
         gradeNames: ["fluid.modelComponent"],
@@ -2421,6 +2421,41 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         fluid.tests.fluid5585.runOneConfiguration("fluid.tests.fluid5585.implicitRelay", fixtureFunc);
         fluid.tests.fluid5585.runOneConfiguration("fluid.tests.fluid5585.explicitRelay", fixtureFunc);
     });
+
+    /** FLUID-6208: Model shrinkage during relay **/
+
+    fluid.tests.fluid6208relay = function (value) {
+        var togo = {};
+        for (var i = 1; i <= value; ++i) {
+            togo[String.fromCharCode(value - i + "a".charCodeAt(0))] = i;
+        }
+        return togo;
+    };
+
+    fluid.defaults("fluid.tests.fluid6208root", {
+        gradeNames: "fluid.modelComponent",
+        model: {
+            source: 3
+        },
+        modelRelay: {
+            source: "source",
+            target: "target",
+            singleTransform: {
+                type: "fluid.tests.fluid6208relay"
+            }
+        }
+    });
+
+    jqUnit.test("FLUID-6208: Model shrinkage during relay", function () {
+        var root = fluid.tests.fluid6208root();
+        var expecteds = [{}, {a: 1}, {a: 2, b: 1}, {a: 3, b: 2, c: 1}];
+        do {
+            jqUnit.assertDeepEq("Relayed value for source of " + root.model.source + " is correct ",
+                expecteds[root.model.source], root.model.target);
+            root.applier.change("source", root.model.source - 1);
+        } while (root.model.source >= 0);
+    });
+
 
     /** FLUID-6194: Do not relay DELETEs backwards for uninvertible transforms **/
 
