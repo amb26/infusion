@@ -747,6 +747,60 @@ https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
         fluid.test.assertTransactionsConcluded();
     });
 
+    /** FLUID-6517: Model relays should prioritize construction options over defaults **/
+    fluid.defaults("fluid.tests.fluid6517", {
+        gradeNames: 'fluid.modelComponent',
+        model: {
+            value: 'grade defaults value'
+        }
+    });
+
+    var fluid6517Implicit = fluid.construct("fluid6517Implicit", {
+        type: "fluid.tests.fluid6517",
+        model: {
+            value: "{that}.childComponent.model.value"
+        },
+        components: {
+            childComponent: {
+                type: "fluid.modelComponent",
+                options: {
+                    model: {
+                        value: "sub-component construction options value"
+                    }
+                }
+            }
+        }
+    });
+
+    var fluid6517Explicit = fluid.construct("fluid6517Explicit", {
+        type: 'fluid.tests.fluid6517',
+        model: {
+            value: 'construction options value'
+        },
+        components: {
+            childComponent: {
+                type: 'fluid.modelComponent',
+                options: {
+                    model: {
+                        value: 'sub-component construction options value'
+                    }
+                }
+            }
+        },
+        modelRelay: {
+            source: '{that}.childComponent.model.value',
+            target: 'value',
+            singleTransform: {
+                type: 'fluid.transforms.identity'
+            }
+        }
+    });
+
+    jqUnit.test("FLUID-6517 model relays correctly prioritize construction options", function () {
+        jqUnit.assertEquals("Implicit model relays prioritize construction options", "sub-component construction options value", fluid6517Implicit.model.value);
+        jqUnit.assertEquals("Explicit model relays prioritize construction options", "construction options value", fluid6517Explicit.model.value);
+    });
+
     /** FLUID-4982: Simple case of initial model value sourced from asynchronous fetch **/
 
     fluid.defaults("fluid.tests.fluid4982simple", {
